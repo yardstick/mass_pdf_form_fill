@@ -3,9 +3,8 @@ $: << File.expand_path(File.join(File.dirname(__FILE__), 'vendor'))
 require 'bundler/setup'
 require 'java'
 require 'itextpdf-5.1.3.jar'
-require 'yajl'
+require 'gson-2.1.jar'
 require 'tempfile'
-require 'ruby-debug'
 
 EmptyString = ''
 
@@ -49,11 +48,13 @@ end
 
 with_copy(output_filename) do |copy|
   with_reader(input_filename) do |reader|
-    Yajl::Parser.parse(STDIN) do |variables|
+    parser = com.google.gson.JsonStreamParser.new(java.io.InputStreamReader.new(java.lang.System.in))
+    while parser.has_next
+      variables = parser.next.get_as_json_object
       with_byte_array_output_stream do |output|
         with_stamper(copy_reader(reader), output) do |stamper, form, field_names|
           field_names.each do |field|
-            form.set_field(field, variables.fetch(field, EmptyString))
+            form.set_field(field, variables.get(field).get_as_string)
           end
         end
 
