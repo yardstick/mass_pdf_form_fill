@@ -1,7 +1,5 @@
 $: << File.expand_path(File.join(File.dirname(__FILE__), 'vendor'))
 
-ENV['BUNDLE_GEMFILE'] = File.expand_path(File.join(File.dirname(__FILE__), 'Gemfile'))
-
 require 'bundler/setup'
 require 'java'
 require 'itextpdf-5.1.3.jar'
