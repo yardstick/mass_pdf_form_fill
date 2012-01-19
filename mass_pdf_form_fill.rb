@@ -1,4 +1,6 @@
-$: << File.expand_path(File.join('.', 'vendor'))
+$: << File.expand_path(File.join(File.dirname(__FILE__), 'vendor'))
+
+ENV['BUNDLE_GEMFILE'] = File.expand_path(File.join(File.dirname(__FILE__), 'Gemfile'))
 
 require 'bundler/setup'
 require 'java'
@@ -9,13 +11,9 @@ require 'ruby-debug'
 
 EmptyString = ''
 
-input_filename = ARGV.shift
-output_filename = ARGV.shift
+input_filename, output_filename = ARGV.take(2)
 
-if input_filename.nil?
-  warn('No input template specified')
-  exit(1)
-end
+abort('No input template specified') if input_filename.nil?
 
 def with_copy(filename = nil)
   output = filename.nil? ? java.io.BufferedOutputStream.new(java.lang.System.out) : java.io.FileOutputStream.new(filename)
@@ -23,8 +21,8 @@ def with_copy(filename = nil)
   copy.open
   yield(copy)
 rescue => boom
-  warn boom.message
-  warn boom.backtrace.join("\n")
+  warn(boom.message)
+  warn(boom.backtrace.join("\n"))
 ensure
   copy.close
 end
