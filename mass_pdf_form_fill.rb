@@ -1,13 +1,10 @@
 $: << File.expand_path(File.join(File.dirname(__FILE__), 'vendor'))
 
 require 'rubygems'
-require 'bundler/setup'
 require 'java'
 require 'itextpdf-5.1.3.jar'
 require 'gson-2.1.jar'
 require 'tempfile'
-
-EmptyString = ''
 
 input_filename, output_filename = ARGV.take(2)
 
