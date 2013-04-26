@@ -6,7 +6,7 @@ require 'itextpdf-5.1.3.jar'
 require 'gson-2.1.jar'
 require 'tempfile'
 
-input_filename, output_filename = ARGV.take(2)
+input_json, input_filename, output_filename = ARGV.take(3)
 
 abort('No input template specified') if input_filename.nil?
 
@@ -44,15 +44,24 @@ def copy_reader(reader)
   com.itextpdf.text.pdf.PdfReader.new(reader)
 end
 
+def get_parser(file)
+  if file == '-'
+    com.google.gson.JsonStreamParser.new(java.io.InputStreamReader.new(java.lang.System.in))
+  else
+    com.google.gson.JsonStreamParser.new(java.io.FileReader.new(java.io.File.new(file)))
+  end
+end
+
 with_copy(output_filename) do |copy|
   with_reader(input_filename) do |reader|
-    parser = com.google.gson.JsonStreamParser.new(java.io.InputStreamReader.new(java.lang.System.in))
+    parser = get_parser(input_json)
     while parser.has_next
       variables = parser.next.get_as_json_object
       with_byte_array_output_stream do |output|
         with_stamper(copy_reader(reader), output) do |stamper, form, field_names|
           field_names.each do |field|
-            form.set_field(field, variables.get(field).get_as_string)
+            value = variables.get(field).get_as_string
+            form.set_field(field, value)
           end
         end
 
