@@ -3,7 +3,7 @@ $: << File.expand_path(File.join(File.dirname(__FILE__), 'vendor'))
 require 'rubygems'
 require 'java'
 require 'itextpdf-5.4.1.jar'
-require 'gson-2.1.jar'
+require 'gson-2.2.4.jar'
 require 'tempfile'
 
 input_json, input_filename, output_filename = ARGV.take(3)
