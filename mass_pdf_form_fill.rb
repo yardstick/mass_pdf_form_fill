@@ -10,8 +10,6 @@ input_json, input_filename, output_filename = ARGV.take(3)
 
 abort('No input template specified') if input_filename.nil?
 
-UnicodeFont = "#{File.expand_path(File.dirname(__FILE__))}/fonts/ARIALUNI.TTF"
-
 def with_copy(filename = nil)
   output = filename.nil? ? java.io.BufferedOutputStream.new(java.lang.System.out) : java.io.FileOutputStream.new(filename)
   copy = com.itextpdf.text.pdf.PdfCopyFields.new(output)
@@ -54,19 +52,6 @@ def get_parser(file)
   end
 end
 
-def multibyte?(str)
-  str.to_s.chars.count < str.to_s.bytes.count
-end
-
-def unicode_font
-  @unicode_font ||= com.itextpdf.text.pdf.BaseFont.create_font(
-    UnicodeFont,
-    com.itextpdf.text.pdf.BaseFont::IDENTITY_H,
-    com.itextpdf.text.pdf.BaseFont::EMBEDDED,
-    false, nil, nil, false
-  )
-end
-
 with_copy(output_filename) do |copy|
   with_reader(input_filename) do |reader|
     parser = get_parser(input_json)
@@ -76,8 +61,6 @@ with_copy(output_filename) do |copy|
         with_stamper(copy_reader(reader), output) do |stamper, form, field_names|
           field_names.each do |field|
             value = variables.get(field).get_as_string
-
-            form.set_field_property(field, 'textfont', unicode_font, nil) if multibyte?(value)
             form.set_field(field, value)
           end
         end
